@@ -40,6 +40,7 @@ class NGBoost(object):
         Dist=Normal,
         Score=LogScore,
         Base=default_tree_learner,
+        categorical_columns=[],
         natural_gradient=True,
         n_estimators=500,
         learning_rate=0.01,
@@ -53,6 +54,7 @@ class NGBoost(object):
         self.Dist = Dist
         self.Score = Score
         self.Base = Base
+        self.categorical_columns = categorical_columns
         self.Manifold = manifold(Score, Dist)
         self.natural_gradient = natural_gradient
         self.n_estimators = n_estimators
@@ -131,7 +133,11 @@ class NGBoost(object):
 
     def fit_base(self, X, grads, sample_weight=None):
         models = [
-            clone(self.Base).fit(X, g, sample_weight=sample_weight) for g in grads.T
+            clone(self.Base).fit(X, 
+                                 g, 
+                                 sample_weight=sample_weight, 
+                                 categorical_feature=self.categorical_columns) 
+                                 for g in grads.T
         ]
         fitted = np.array([m.predict(X) for m in models]).T
         self.base_models.append(models)
