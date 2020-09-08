@@ -205,14 +205,14 @@ class NGBoost(object):
         if Y is None:
             raise ValueError("y cannot be None")
 
-        X, Y = check_X_y(X, Y, y_numeric=True, dtype=None)
+        #X, Y = check_X_y(X, Y, y_numeric=True, dtype=None)
 
         loss_list = []
         self.fit_init_params_to_marginal(Y)
 
         params = self.pred_param(X)
         if X_val is not None and Y_val is not None:
-            X_val, Y_val = check_X_y(X_val, Y_val, y_numeric=True, dtype=None)
+            #X_val, Y_val = check_X_y(X_val, Y_val, y_numeric=True, dtype=None)
             val_params = self.pred_param(X_val)
             val_loss_list = []
             best_val_loss = np.inf
