@@ -130,8 +130,7 @@ class NGBoost(object):
         )
 
     def fit_base(self, X, grads, categorical_columns, sample_weight=None):
-        print(grads)
-        print(X)
+        breakpoint()
         models = [
             clone(self.Base).fit(X, 
                                  g, 
