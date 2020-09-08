@@ -40,7 +40,6 @@ class NGBoost(object):
         Dist=Normal,
         Score=LogScore,
         Base=default_tree_learner,
-        categorical_columns=[],
         natural_gradient=True,
         n_estimators=500,
         learning_rate=0.01,
@@ -54,7 +53,6 @@ class NGBoost(object):
         self.Dist = Dist
         self.Score = Score
         self.Base = Base
-        self.categorical_columns = categorical_columns
         self.Manifold = manifold(Score, Dist)
         self.natural_gradient = natural_gradient
         self.n_estimators = n_estimators
@@ -131,12 +129,12 @@ class NGBoost(object):
             params[idxs, :],
         )
 
-    def fit_base(self, X, grads, sample_weight=None):
+    def fit_base(self, X, grads, categorical_columns, sample_weight=None):
         models = [
             clone(self.Base).fit(X, 
                                  g, 
                                  sample_weight=sample_weight, 
-                                 categorical_feature=self.categorical_columns) 
+                                 categorical_feature=categorical_columns) 
                                  for g in grads.T
         ]
         fitted = np.array([m.predict(X) for m in models]).T
@@ -177,6 +175,7 @@ class NGBoost(object):
         self,
         X,
         Y,
+        categorical_columns='auto',
         X_val=None,
         Y_val=None,
         sample_weight=None,
@@ -238,7 +237,7 @@ class NGBoost(object):
             loss = loss_list[-1]
             grads = D.grad(Y_batch, natural=self.natural_gradient)
 
-            proj_grad = self.fit_base(X_batch, grads, weight_batch)
+            proj_grad = self.fit_base(X_batch, grads, categorical_columns, weight_batch)
             scale = self.line_search(proj_grad, P_batch, Y_batch, weight_batch)
 
             # pdb.set_trace()
